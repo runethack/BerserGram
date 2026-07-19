@@ -5,20 +5,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone official Cherrygram
-        run: git clone https://github.com/arsLan123/Cherrygram.git .
+      - uses: actions/checkout@v4
 
-      - name: Apply custom files
+      - name: Clone Cherrygram
         run: |
-          if [ -f TMessagesProj/src/main/res/values/strings.xml ]; then
-            cp -f TMessagesProj/src/main/res/values/strings.xml TMessagesProj/src/main/res/values/strings.xml 2>/dev/null || true
-          fi
-          if [ -f TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java ]; then
-            cp -f TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java 2>/dev/null || true
-          fi
-          if [ -f TMessagesProj_App/build.gradle ]; then
-            cp -f TMessagesProj_App/build.gradle TMessagesProj_App/build.gradle 2>/dev/null || true
-          fi
+          git clone https://github.com/arsLan123/Cherrygram.git /tmp/cherrygram
+
+      - name: Copy custom files into Cherrygram
+        run: |
+          cp -f TMessagesProj/src/main/res/values/strings.xml /tmp/cherrygram/TMessagesProj/src/main/res/values/strings.xml
+          cp -f TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java /tmp/cherrygram/TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java
+          cp -f TMessagesProj_App/build.gradle /tmp/cherrygram/TMessagesProj_App/build.gradle
 
       - uses: actions/setup-java@v4
         with:
@@ -26,11 +23,13 @@ jobs:
           distribution: 'temurin'
 
       - name: Build APK
+        working-directory: /tmp/cherrygram
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: BerserGram
-          path: TMessagesProj_App/build/outputs/apk/debug/*.apk
+          path: /tmp/cherrygram/TMessagesProj_App/build/outputs/apk/debug/*.apk
