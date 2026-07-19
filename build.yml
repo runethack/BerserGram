@@ -1,0 +1,36 @@
+name: Build BerserGram
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone official Cherrygram
+        run: git clone https://github.com/arsLan123/Cherrygram.git .
+
+      - name: Apply custom files
+        run: |
+          if [ -f TMessagesProj/src/main/res/values/strings.xml ]; then
+            cp -f TMessagesProj/src/main/res/values/strings.xml TMessagesProj/src/main/res/values/strings.xml 2>/dev/null || true
+          fi
+          if [ -f TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java ]; then
+            cp -f TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java 2>/dev/null || true
+          fi
+          if [ -f TMessagesProj_App/build.gradle ]; then
+            cp -f TMessagesProj_App/build.gradle TMessagesProj_App/build.gradle 2>/dev/null || true
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BerserGram
+          path: TMessagesProj_App/build/outputs/apk/debug/*.apk
