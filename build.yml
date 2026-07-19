@@ -9,7 +9,7 @@ jobs:
 
       - name: Clone Cherrygram
         run: |
-          git clone https://github.com/arsLan123/Cherrygram.git /tmp/cherrygram
+          git clone https://github.com/arsLan4k1390/Cherrygram.git /tmp/cherrygram
 
       - name: Copy custom files into Cherrygram
         run: |
