@@ -5,19 +5,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Clone official Cherrygram
-        run: git clone https://github.com/arsLan123/Cherrygram.git .
+        run: |
+          git clone https://github.com/arsLan123/Cherrygram.git cherrygram_temp
+          cp -r cherrygram_temp/* .
+          cp -r cherrygram_temp/.* . 2>/dev/null || true
+          rm -rf cherrygram_temp
 
       - name: Apply custom files
         run: |
           if [ -f TMessagesProj/src/main/res/values/strings.xml ]; then
-            cp -f TMessagesProj/src/main/res/values/strings.xml TMessagesProj/src/main/res/values/strings.xml 2>/dev/null || true
+            cp -f TMessagesProj/src/main/res/values/strings.xml TMessagesProj/src/main/res/values/strings.xml
           fi
           if [ -f TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java ]; then
-            cp -f TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java 2>/dev/null || true
+            cp -f TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java
           fi
           if [ -f TMessagesProj_App/build.gradle ]; then
-            cp -f TMessagesProj_App/build.gradle TMessagesProj_App/build.gradle 2>/dev/null || true
+            cp -f TMessagesProj_App/build.gradle TMessagesProj_App/build.gradle
           fi
 
       - uses: actions/setup-java@v4
